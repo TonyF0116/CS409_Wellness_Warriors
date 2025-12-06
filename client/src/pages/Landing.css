@@ -1,0 +1,136 @@
+.landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-header {
+  background: #2E7D32;
+}
+
+.landing-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+}
+
+.landing-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-link {
+  color: white;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+}
+
+.btn-white {
+  background: white;
+  color: #2E7D32;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.btn-white:hover {
+  background: #F5F5F5;
+}
+
+.hero {
+  flex: 1;
+  background: linear-gradient(135deg, #E8F5E9 0%, #FFFFFF 100%);
+  padding: 4rem 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.hero-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: center;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .hero-inner {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.hero-content h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #212121;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.hero-content p {
+  font-size: 1.125rem;
+  color: #616161;
+  margin-bottom: 2rem;
+}
+
+.hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.btn-outline {
+  background: transparent;
+  color: #2E7D32;
+  border: 2px solid #2E7D32;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.btn-outline:hover {
+  background: #E8F5E9;
+}
+
+.hero-visual {
+  display: flex;
+  justify-content: center;
+}
+
+.hero-rings {
+  width: 280px;
+  height: 280px;
+}
+
+@media (min-width: 768px) {
+  .hero-rings {
+    width: 350px;
+    height: 350px;
+  }
+}
+
+.landing-footer {
+  background: #2E7D32;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+}
+
+.landing-footer p {
+  font-size: 0.875rem;
+}

@@ -1,0 +1,106 @@
+.profile-page {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.profile-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 500px) {
+  .profile-header {
+    flex-direction: row;
+    text-align: left;
+  }
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #4CAF50, #2E7D32);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.profile-info h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #212121;
+  margin-bottom: 0.25rem;
+}
+
+.profile-info p {
+  color: #757575;
+  font-size: 0.9rem;
+}
+
+.name-input {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #212121;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  padding: 0.5rem;
+  width: 100%;
+  max-width: 250px;
+}
+
+.name-input:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.stat-card {
+  background: #F5F5F5;
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.stat-value {
+  display: block;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #2E7D32;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #757575;
+}

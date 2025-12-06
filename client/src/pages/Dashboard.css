@@ -1,0 +1,125 @@
+.dashboard {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.dashboard-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.greeting {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #212121;
+  margin-bottom: 2rem;
+}
+
+.dashboard-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .dashboard-content {
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+  }
+}
+
+.progress-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rings-container {
+  width: 280px;
+  height: 280px;
+  margin-bottom: 1.5rem;
+}
+
+.progress-rings {
+  width: 100%;
+  height: 100%;
+}
+
+.streak-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.125rem;
+  color: #212121;
+}
+
+.streak-text strong {
+  color: #2E7D32;
+}
+
+.checklist-card {
+  background: linear-gradient(to bottom, #FFF8E7, #FFFFFF);
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+.habit-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.habit-item {
+  padding: 0.25rem 0;
+}
+
+.habit-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+}
+
+.habit-label:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.habit-label input {
+  display: none;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #BDBDBD;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.habit-label.checked .checkbox {
+  background: #4CAF50;
+  border-color: #4CAF50;
+}
+
+.checkmark {
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.habit-name {
+  font-size: 0.9rem;
+  color: #424242;
+  transition: all 0.15s ease;
+}
+
+.habit-label.checked .habit-name {
+  color: #9E9E9E;
+  text-decoration: line-through;
+}

@@ -1,0 +1,129 @@
+.calendar-page {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.calendar-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.calendar-card h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #212121;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #757575;
+  margin-bottom: 1.5rem;
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.nav-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F5F5F5;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #424242;
+  cursor: pointer;
+}
+
+.nav-btn:hover {
+  background: #E0E0E0;
+}
+
+.month-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #212121;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.day-header {
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #757575;
+  text-transform: uppercase;
+}
+
+.day-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.day-cell:not(.empty):hover {
+  background: #F5F5F5;
+}
+
+.day-cell.today {
+  background: #E8F5E9;
+}
+
+.day-cell.today .day-number {
+  color: #2E7D32;
+  font-weight: 600;
+}
+
+.day-number {
+  font-size: 0.875rem;
+  color: #424242;
+}
+
+.data-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4CAF50;
+}
+
+.legend {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #E0E0E0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #757575;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.legend-dot.has-data {
+  background: #4CAF50;
+}
