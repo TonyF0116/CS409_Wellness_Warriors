@@ -123,3 +123,15 @@
   color: #9E9E9E;
   text-decoration: line-through;
 }
+
+.habit-streak {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: #2E7D32;
+}
+
+.habit-item.empty-state {
+  text-align: center;
+  color: #757575;
+  padding: 1rem 0;
+}

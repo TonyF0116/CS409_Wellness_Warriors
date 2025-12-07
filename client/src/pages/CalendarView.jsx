@@ -1,26 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useAuth } from '../context/AuthContext'
+import { useToast } from '../components/Toast'
+import { progressApi } from '../services/api'
 import './CalendarView.css'
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
-// Mock data for habit completion
-const mockCompletionData = {
-  '2025-1-5': true,
-  '2025-1-6': true,
-  '2025-1-7': true,
-  '2025-1-10': true,
-  '2025-1-11': true,
-  '2025-1-12': true,
-  '2025-1-15': true,
-  '2025-1-16': true,
-  '2025-1-20': true,
-  '2025-1-21': true,
-  '2025-1-22': true,
+const formatDateKey = (date) => {
+  const month = `${date.getMonth() + 1}`.padStart(2, '0')
+  const day = `${date.getDate()}`.padStart(2, '0')
+  return `${date.getFullYear()}-${month}-${day}`
 }
 
 function CalendarView() {
+  const { user } = useAuth()
+  const { showToast } = useToast()
   const [currentDate, setCurrentDate] = useState(new Date())
+  const [calendarData, setCalendarData] = useState({})
+  const [loading, setLoading] = useState(true)
   
   const year = currentDate.getFullYear()
   const month = currentDate.getMonth()
@@ -31,6 +29,34 @@ function CalendarView() {
   const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1))
   const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1))
 
+  useEffect(() => {
+    let isMounted = true
+    async function loadCalendar() {
+      if (!user) return
+      setLoading(true)
+      const start = new Date(year, month, 1)
+      const end = new Date(year, month + 1, 0)
+      try {
+        const data = await progressApi.calendar(user.id, {
+          start: formatDateKey(start),
+          end: formatDateKey(end)
+        })
+        if (isMounted) {
+          setCalendarData(data.dates || {})
+        }
+      } catch (error) {
+        showToast(error.message, 'error')
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    loadCalendar()
+    return () => { isMounted = false }
+  }, [user, year, month, showToast])
+
   const days = []
   for (let i = 0; i < firstDay; i++) {
     days.push({ day: null, key: `empty-${i}` })
@@ -38,7 +64,8 @@ function CalendarView() {
   for (let i = 1; i <= daysInMonth; i++) {
     const isToday = i === today.getDate() && month === today.getMonth() && year === today.getFullYear()
     const dateKey = `${year}-${month + 1}-${i}`
-    const hasData = mockCompletionData[dateKey] || false
+    const isoKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`
+    const hasData = calendarData[isoKey] || false
     days.push({ day: i, key: i, isToday, hasData })
   }
 
@@ -54,7 +81,9 @@ function CalendarView() {
           <button onClick={nextMonth} className="nav-btn">&gt;</button>
         </div>
 
-        <div className="calendar-grid">
+        {loading && <p className="subtitle">Loading calendar...</p>}
+
+        <div className={`calendar-grid ${loading ? 'is-loading' : ''}`}>
           {DAYS.map(day => (
             <div key={day} className="day-header">{day}</div>
           ))}

@@ -1,0 +1,19 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "NODE_ENV=development node src/index.js",
+    "start": "node src/index.js",
+    "test": "echo \"No backend tests defined\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "REST API for Wellness Warriors habits",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.2.1",
+    "morgan": "^1.10.1"
+  }
+}
