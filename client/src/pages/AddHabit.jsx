@@ -1,15 +1,18 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import { useToast } from '../components/Toast'
+import { habitApi } from '../services/api'
 import './AddHabit.css'
 
 function AddHabit() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const { showToast } = useToast()
   const [formData, setFormData] = useState({
     name: '',
     type: '',
-    cycle: '',
+    cycle: 'daily',
     message: ''
   })
   const [loading, setLoading] = useState(false)
@@ -26,17 +29,20 @@ function AddHabit() {
       showToast('Please enter a habit name', 'error')
       return
     }
-    
+    if (!user) {
+      showToast('Please log in again', 'error')
+      return
+    }
     setLoading(true)
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    // TODO: Connect to backend API
-    console.log('Saving habit:', formData)
-    showToast('Habit saved successfully!', 'success')
-    setLoading(false)
-    navigate('/dashboard')
+    try {
+      await habitApi.create(user.id, formData)
+      showToast('Habit saved successfully!', 'success')
+      navigate('/dashboard')
+    } catch (error) {
+      showToast(error.message, 'error')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -77,7 +83,6 @@ function AddHabit() {
               value={formData.cycle}
               onChange={handleChange}
             >
-              <option value="">Value</option>
               <option value="daily">Daily</option>
               <option value="weekly">Weekly</option>
               <option value="monthly">Monthly</option>

@@ -1,58 +1,96 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../components/Toast'
+import { habitApi, progressApi } from '../services/api'
 import './Dashboard.css'
-
-const initialHabits = [
-  { id: 1, name: 'Drink 8 glasses of water', completed: false },
-  { id: 2, name: 'Exercise for 30 minutes', completed: false },
-  { id: 3, name: 'Read for 20 minutes', completed: false },
-  { id: 4, name: 'Meditate for 10 minutes', completed: false },
-  { id: 5, name: 'Get 8 hours of sleep', completed: false },
-  { id: 6, name: 'Eat healthy breakfast', completed: true },
-  { id: 7, name: 'Take vitamins', completed: true },
-  { id: 8, name: 'Walk 10,000 steps', completed: true },
-  { id: 9, name: 'Practice gratitude', completed: true },
-  { id: 10, name: 'Limit screen time', completed: true },
-]
 
 function Dashboard() {
   const { user } = useAuth()
   const { showToast } = useToast()
   const [habits, setHabits] = useState([])
+  const [summary, setSummary] = useState(null)
   const [loading, setLoading] = useState(true)
-  const streak = 7
+  const [updatingHabitId, setUpdatingHabitId] = useState(null)
 
-  // Simulate loading data
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setHabits(initialHabits)
-      setLoading(false)
-    }, 500)
-    return () => clearTimeout(timer)
-  }, [])
+    let isMounted = true
 
-  const toggleHabit = (id) => {
-    setHabits(habits.map(h => {
-      if (h.id === id) {
-        const newCompleted = !h.completed
-        showToast(
-          newCompleted ? 'Habit completed! 🎉' : 'Habit unchecked',
-          'success'
-        )
-        return { ...h, completed: newCompleted }
+    async function load() {
+      if (!user) return
+      try {
+        setLoading(true)
+        const [habitData, overview] = await Promise.all([
+          habitApi.list(user.id),
+          progressApi.overview(user.id)
+        ])
+        if (isMounted) {
+          setHabits(habitData)
+          setSummary(overview)
+        }
+      } catch (error) {
+        showToast(error.message, 'error')
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
       }
-      return h
-    }))
+    }
+
+    load()
+    return () => { isMounted = false }
+  }, [user, showToast])
+
+  const refreshSummary = async () => {
+    if (!user) return
+    try {
+      const overview = await progressApi.overview(user.id)
+      setSummary(overview)
+    } catch (error) {
+      showToast(error.message, 'error')
+    }
   }
 
+  const updateHabitState = (updatedHabit) => {
+    setHabits(prev =>
+      prev.map(habit => (habit.id === updatedHabit.id ? updatedHabit : habit))
+    )
+  }
+
+  const toggleHabit = async (habit) => {
+    if (!habit || !user) return
+
+    setUpdatingHabitId(habit.id)
+    try {
+      let updatedHabit
+      if (habit.completedToday && habit.completedTodayCompletionId) {
+        updatedHabit = await habitApi.removeCompletion(user.id, habit.id, habit.completedTodayCompletionId)
+        showToast('Marked incomplete for today', 'info')
+      } else {
+        updatedHabit = await habitApi.logCompletion(user.id, habit.id)
+        showToast('Habit completed! 🎉', 'success')
+      }
+      updateHabitState(updatedHabit)
+      await refreshSummary()
+    } catch (error) {
+      showToast(error.message, 'error')
+    } finally {
+      setUpdatingHabitId(null)
+    }
+  }
+
+  const completionRate = habits.length
+    ? (habits.filter(habit => habit.completedToday).length / habits.length) * 100
+    : 0
+  const totalEntries = habits.reduce((sum, habit) => sum + (habit.totalEntries || 0), 0)
+
   const ringData = [
-    { color: '#E91E63', progress: 80 },
-    { color: '#FF5722', progress: 70 },
-    { color: '#00BCD4', progress: 90 },
-    { color: '#4CAF50', progress: 60 },
-    { color: '#8BC34A', progress: 75 },
+    { color: '#E91E63', progress: Math.min(100, completionRate || 5) },
+    { color: '#FF5722', progress: Math.min(100, (summary?.activeStreak || 0) * 10) },
+    { color: '#00BCD4', progress: Math.min(100, (summary?.completionsThisWeek || 0) * 12) },
+    { color: '#4CAF50', progress: Math.min(100, (summary?.totalHabits || 0) * 15) },
+    { color: '#8BC34A', progress: Math.min(100, totalEntries ? (summary?.daysActive || 0) / totalEntries * 100 : 10) },
   ]
+  const streak = summary?.activeStreak || 0
 
   if (loading) {
     return (
@@ -111,18 +149,27 @@ function Dashboard() {
           <div className="checklist-section">
             <div className="checklist-card">
               <ul className="habit-list">
+                {habits.length === 0 && (
+                  <li className="habit-item empty-state">
+                    <span>No habits yet. Create one to get started!</span>
+                  </li>
+                )}
                 {habits.map(habit => (
                   <li key={habit.id} className="habit-item">
-                    <label className={`habit-label ${habit.completed ? 'checked' : ''}`}>
+                    <label className={`habit-label ${habit.completedToday ? 'checked' : ''}`}>
                       <input
                         type="checkbox"
-                        checked={habit.completed}
-                        onChange={() => toggleHabit(habit.id)}
+                        checked={habit.completedToday}
+                        disabled={updatingHabitId === habit.id}
+                        onChange={() => toggleHabit(habit)}
                       />
                       <span className="checkbox">
-                        {habit.completed && <span className="checkmark">✓</span>}
+                        {habit.completedToday && <span className="checkmark">✓</span>}
                       </span>
                       <span className="habit-name">{habit.name}</span>
+                      {habit.streak > 0 && (
+                        <span className="habit-streak">{habit.streak} day streak</span>
+                      )}
                     </label>
                   </li>
                 ))}

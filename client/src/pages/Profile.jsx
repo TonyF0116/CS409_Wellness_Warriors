@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../components/Toast'
+import { progressApi } from '../services/api'
 import './Profile.css'
 
 function Profile() {
@@ -8,11 +9,29 @@ function Profile() {
   const { showToast } = useToast()
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState(user?.name || '')
+  const [summary, setSummary] = useState(null)
+
+  useEffect(() => {
+    let isMounted = true
+    async function loadStats() {
+      if (!user) return
+      try {
+        const data = await progressApi.overview(user.id)
+        if (isMounted) {
+          setSummary(data)
+        }
+      } catch (error) {
+        showToast(error.message, 'error')
+      }
+    }
+    loadStats()
+    return () => { isMounted = false }
+  }, [user, showToast])
 
   const stats = [
-    { label: 'Days Active', value: 47 },
-    { label: 'Current Streak', value: 7 },
-    { label: 'Habits Completed', value: 312 },
+    { label: 'Days Active', value: summary?.daysActive ?? 0 },
+    { label: 'Current Streak', value: summary?.activeStreak ?? 0 },
+    { label: 'Habits Completed', value: summary?.totalCompletions ?? 0 },
   ]
 
   const handleSave = () => {
