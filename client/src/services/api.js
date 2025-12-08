@@ -58,6 +58,13 @@ export const habitApi = {
     });
     return data.habit;
   },
+  async delete(userId, habitId) {
+    const data = await request(`/habits/${habitId}`, {
+      method: "DELETE",
+      userId,
+    });
+    return "";
+  },
   async logCompletion(userId, habitId, date) {
     const data = await request(`/habits/${habitId}/completions`, {
       method: "POST",

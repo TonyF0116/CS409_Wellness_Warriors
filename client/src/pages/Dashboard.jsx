@@ -78,6 +78,21 @@ function Dashboard() {
     }
   }
 
+  const deleteHabit = async (habitId) => {
+    if (!user || !habitId) return;
+    setUpdatingHabitId(habitId);
+    try {
+      await habitApi.delete(user.id, habitId);
+      setHabits(prev => prev.filter(habit => habit.id !== habitId));
+      showToast('Habit deleted', 'info');
+      await refreshSummary();
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      setUpdatingHabitId(null);
+    }
+  }
+
   const completionRate = habits.length
     ? (habits.filter(habit => habit.completedToday).length / habits.length) * 100
     : 0
@@ -156,21 +171,31 @@ function Dashboard() {
                 )}
                 {habits.map(habit => (
                   <li key={habit.id} className="habit-item">
-                    <label className={`habit-label ${habit.completedToday ? 'checked' : ''}`}>
-                      <input
-                        type="checkbox"
-                        checked={habit.completedToday}
-                        disabled={updatingHabitId === habit.id}
-                        onChange={() => toggleHabit(habit)}
-                      />
-                      <span className="checkbox">
-                        {habit.completedToday && <span className="checkmark">✓</span>}
-                      </span>
-                      <span className="habit-name">{habit.name}</span>
-                      {habit.streak > 0 && (
-                        <span className="habit-streak">{habit.streak} day streak</span>
-                      )}
-                    </label>
+                    <div className="habit-row">
+                      <label className={`habit-label ${habit.completedToday ? 'checked' : ''}`}>
+                        <input
+                          type="checkbox"
+                          checked={habit.completedToday}
+                          disabled={updatingHabitId === habit.id}
+                          onChange={() => toggleHabit(habit)}
+                        />
+                        <span className="checkbox">
+                          {habit.completedToday && <span className="checkmark">✓</span>}
+                        </span>
+                        <span className="habit-name">{habit.name}</span>
+                      </label>
+                        {habit.streak > 0 && (
+                          <span className="habit-streak">{habit.streak} day streak</span>
+                        )}
+                        <button
+                          className="delete-habit-btn"
+                          title="Delete habit"
+                          disabled={updatingHabitId === habit.id}
+                          onClick={() => deleteHabit(habit.id)}
+                        >
+                          &#10006;
+                        </button>
+                    </div>
                   </li>
                 ))}
               </ul>
