@@ -1,84 +1,95 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api'
+const API_BASE_URL = "https://cs409-wellness-warriors.onrender.com/api";
 
-async function request(path, { method = 'GET', body, userId } = {}) {
-  const headers = {}
+async function request(path, { method = "GET", body, userId } = {}) {
+  const headers = {};
 
   if (body !== undefined) {
-    headers['Content-Type'] = 'application/json'
+    headers["Content-Type"] = "application/json";
   }
 
   if (userId) {
-    headers['x-user-id'] = userId
+    headers["x-user-id"] = userId;
   }
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method,
     headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined
-  })
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+  });
 
   if (!response.ok) {
-    let message = 'Request failed'
+    let message = "Request failed";
     try {
-      const errorBody = await response.json()
+      const errorBody = await response.json();
       if (errorBody?.message) {
-        message = errorBody.message
+        message = errorBody.message;
       }
     } catch {
       // ignore JSON parse issues
     }
-    throw new Error(message)
+    throw new Error(message);
   }
 
   if (response.status === 204) {
-    return null
+    return null;
   }
 
-  return response.json()
+  return response.json();
 }
 
 export const habitApi = {
   async list(userId) {
-    const data = await request('/habits', { userId })
-    return data.habits
+    const data = await request("/habits", { userId });
+    return data.habits;
   },
   async create(userId, payload) {
-    const data = await request('/habits', { method: 'POST', body: payload, userId })
-    return data.habit
+    const data = await request("/habits", {
+      method: "POST",
+      body: payload,
+      userId,
+    });
+    return data.habit;
   },
   async update(userId, habitId, payload) {
-    const data = await request(`/habits/${habitId}`, { method: 'PUT', body: payload, userId })
-    return data.habit
+    const data = await request(`/habits/${habitId}`, {
+      method: "PUT",
+      body: payload,
+      userId,
+    });
+    return data.habit;
   },
   async logCompletion(userId, habitId, date) {
     const data = await request(`/habits/${habitId}/completions`, {
-      method: 'POST',
+      method: "POST",
       body: { date },
-      userId
-    })
-    return data.habit
+      userId,
+    });
+    return data.habit;
   },
   async removeCompletion(userId, habitId, completionId) {
-    const data = await request(`/habits/${habitId}/completions/${completionId}`, {
-      method: 'DELETE',
-      userId
-    })
-    return data.habit
-  }
-}
+    const data = await request(
+      `/habits/${habitId}/completions/${completionId}`,
+      {
+        method: "DELETE",
+        userId,
+      }
+    );
+    return data.habit;
+  },
+};
 
 export const progressApi = {
   async overview(userId) {
-    const data = await request('/progress/overview', { userId })
-    return data.summary
+    const data = await request("/progress/overview", { userId });
+    return data.summary;
   },
   async calendar(userId, params) {
-    const query = new URLSearchParams(params || {}).toString()
-    const data = await request(`/progress/calendar?${query}`, { userId })
-    return data
-  }
-}
+    const query = new URLSearchParams(params || {}).toString();
+    const data = await request(`/progress/calendar?${query}`, { userId });
+    return data;
+  },
+};
 
 export function getApiBaseUrl() {
-  return API_BASE_URL
+  return API_BASE_URL;
 }
