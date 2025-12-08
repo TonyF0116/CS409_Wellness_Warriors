@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import { getApiBaseUrl } from '../services/api'
 
 const AuthContext = createContext(null)
 
@@ -19,26 +20,50 @@ export function AuthProvider({ children }) {
   }, [])
 
   const login = async (email, password) => {
-    await new Promise(resolve => setTimeout(resolve, 500))
     if (!email || !password) {
       throw new Error('Email and password required')
     }
-    const userData = {
-      id: '1',
-      name: email.split('@')[0],
-      email
+    const response = await fetch(`${getApiBaseUrl()}/users/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: email, password })
+    })
+    if (!response.ok) {
+      let message = 'Login failed'
+      try {
+        const errorBody = await response.json()
+        if (errorBody?.error) message = errorBody.error
+      } catch {}
+      throw new Error(message)
     }
+    const data = await response.json()
+    const userId = response.headers.get('x-user-id') || data.userId
+    const userData = { id: userId, name: email.split('@')[0], email }
     localStorage.setItem('wellness_user', JSON.stringify(userData))
     setUser(userData)
     return userData
   }
 
   const register = async (name, email, password) => {
-    await new Promise(resolve => setTimeout(resolve, 500))
     if (!name || !email || !password) {
       throw new Error('All fields required')
     }
-    const userData = { id: '1', name, email }
+    const response = await fetch(`${getApiBaseUrl()}/users/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: email, password })
+    })
+    if (!response.ok) {
+      let message = 'Registration failed'
+      try {
+        const errorBody = await response.json()
+        if (errorBody?.error) message = errorBody.error
+      } catch {}
+      throw new Error(message)
+    }
+    const data = await response.json()
+    const userId = response.headers.get('x-user-id') || data.userId
+    const userData = { id: userId, name, email }
     localStorage.setItem('wellness_user', JSON.stringify(userData))
     setUser(userData)
     return userData
